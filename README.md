@@ -47,7 +47,7 @@ start-cli auth login
 make install
 ```
 
-**Tip:** You can also install the wasabi-webtop.s9pk by sideloading it under the **StartOS > System > Sideload a Service** section.
+**Tip:** You can also install the wasabi-backend.s9pk by sideloading it under the **StartOS > System > Sideload a Service** section.
 
 ## Verify Install
 

@@ -6,7 +6,8 @@ PKG_ID := $(shell yq e ".id" manifest.yaml)
 PKG_VERSION := $(shell yq e ".version" manifest.yaml)
 TS_FILES := $(shell find ./ -name \*.ts)
 ROOT_FILES := $(shell find ./root)
-ASSET_FILES := $(shell find ./assets/compat)
+ASSET_FILES := $(shell find ./assets)
+WASABI_FILES := $(shell find ./WalletWasabi)
 
 .DELETE_ON_ERROR:
 
@@ -35,14 +36,17 @@ clean:
 scripts/embassy.js: $(TS_FILES)
 	deno bundle scripts/embassy.ts scripts/embassy.js
 
-docker-images/x86_64.tar: manifest.yaml Dockerfile docker_entrypoint.sh $(ROOT_FILES)
+docker-images/x86_64.tar: manifest.yaml Dockerfile docker_entrypoint.sh $(ROOT_FILES) $(WASABI_FILES) tmp/yq_linux_amd64
 	mkdir -p docker-images
 	docker buildx build --tag start9/$(PKG_ID)/main:$(PKG_VERSION) \
 		--build-arg ARCH=x86_64 \
 		--build-arg PLATFORM=amd64 \
-		--build-arg YQ_VERSION=$(YQ_VERSION) \
-		--build-arg YQ_SHA=$(YQ_SHA_AMD64) \
 		--platform=linux/amd64 -o type=docker,dest=docker-images/x86_64.tar .
+
+tmp/yq_linux_amd64:
+	mkdir -p tmp
+	wget -qO ./tmp/yq_linux_amd64 https://github.com/mikefarah/yq/releases/download/v$(YQ_VERSION)/yq_linux_amd64
+	echo "$(YQ_SHA_AMD64) ./tmp/yq_linux_amd64" | sha256sum --check || exit 1
 
 $(PKG_ID).s9pk: manifest.yaml instructions.md icon.png LICENSE scripts/embassy.js docker-images/x86_64.tar $(ASSET_FILES)
 ifeq ($(ARCH),x86_64)

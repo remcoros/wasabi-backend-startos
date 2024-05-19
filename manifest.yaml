@@ -1,5 +1,5 @@
 id: wasabi-backend
-title: "Wasabi"
+title: "Wasabi Backend"
 version: 2.0.7.2
 release-notes: |
   * Initial release of Wasabi Backend
@@ -24,7 +24,7 @@ main:
   entrypoint: "docker_entrypoint.sh"
   args: []
   mounts:
-    main: /home/app
+    main: /root
   gpu-acceleration: false
 hardware-requirements:
   arch:
@@ -75,11 +75,11 @@ backup:
     entrypoint: /mnt/assets/backup.sh
     args:
       - create
-      - /home/app
+      - /root
     mounts:
       BACKUP: /mnt/backup
       compat: /mnt/assets
-      main: /home/app
+      main: /root
   restore:
     type: docker
     image: compat
@@ -87,11 +87,11 @@ backup:
     entrypoint: /mnt/assets/backup.sh
     args:
       - restore
-      - /home/app
+      - /root
     mounts:
       BACKUP: /mnt/backup
       compat: /mnt/assets
-      main: /home/app
+      main: /root
 migrations:
   from:
     "*":
